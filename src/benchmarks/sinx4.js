@@ -107,20 +107,20 @@
     var emm2;
 
     sign_bit = x;
-    x        = SIMD.int32x4.bitsToFloat32x4(SIMD.int32x4.and(SIMD.float32x4.bitsToInt32x4(x), SIMD.int32x4.not(SIMD.int32x4.splat(0x80000000))));
-    sign_bit = SIMD.int32x4.bitsToFloat32x4(SIMD.int32x4.and(SIMD.float32x4.bitsToInt32x4(sign_bit), SIMD.int32x4.splat(0x80000000)));
-    y        = SIMD.float32x4.mul(x, SIMD.float32x4.splat(1.27323954473516));
+    x        = SIMD.int32x4.bitsToFloat32x4(SIMD.int32x4.and(SIMD.float32x4.bitsToInt32x4(x), _ps_inv_sign_mask));
+    sign_bit = SIMD.int32x4.bitsToFloat32x4(SIMD.int32x4.and(SIMD.float32x4.bitsToInt32x4(sign_bit), _ps_sign_mask));
+    y        = SIMD.float32x4.mul(x, _ps_cephes_FOPI);
     //printFloat32x4 ("Probe 6", y);
     emm2     = SIMD.float32x4.toInt32x4(y);
-    emm2     = SIMD.int32x4.add(emm2, SIMD.int32x4.splat(1));
-    emm2     = SIMD.int32x4.and(emm2, SIMD.int32x4.not(SIMD.int32x4.splat(1)));
+    emm2     = SIMD.int32x4.add(emm2, _pi32_1);
+    emm2     = SIMD.int32x4.and(emm2, _pi32_inv1);
     //printInt32x4 ("Probe 8", emm2);
     y        = SIMD.int32x4.toFloat32x4(emm2);
     //printFloat32x4 ("Probe 7", y);
-    emm0     = SIMD.int32x4.and(emm2, SIMD.int32x4.splat(4));
+    emm0     = SIMD.int32x4.and(emm2, _pi32_4);
     emm0     = SIMD.int32x4.shiftLeft(emm0, 29);
 
-    emm2     = SIMD.int32x4.and(emm2, SIMD.int32x4.splat(2));
+    emm2     = SIMD.int32x4.and(emm2, _pi32_2);
     emm2     = SIMD.int32x4.equal(emm2, SIMD.int32x4.zero());
 
     swap_sign_bit = SIMD.int32x4.bitsToFloat32x4(emm0);
@@ -130,10 +130,10 @@
 
     //printFloat32x4 ("Probe 4", y);
     //printFloat32x4 ("Probe 5", _ps_minus_cephes_DP1);
-    xmm1 = SIMD.float32x4.mul(y, SIMD.float32x4.splat(-0.78515625));
+    xmm1 = SIMD.float32x4.mul(y, _ps_minus_cephes_DP1);
     //printFloat32x4 ("Probe 3", xmm1);
-    xmm2 = SIMD.float32x4.mul(y, SIMD.float32x4.splat(-2.4187564849853515625E-4));
-    xmm3 = SIMD.float32x4.mul(y, SIMD.float32x4.splat(-3.77489497744594108E-8));
+    xmm2 = SIMD.float32x4.mul(y, _ps_minus_cephes_DP2);
+    xmm3 = SIMD.float32x4.mul(y, _ps_minus_cephes_DP3);
     x    = SIMD.float32x4.add(x, xmm1);
     x    = SIMD.float32x4.add(x, xmm2);
     x    = SIMD.float32x4.add(x, xmm3);
@@ -142,23 +142,23 @@
     y    = _ps_coscof_p0;
     z    = SIMD.float32x4.mul(x, x);
     y    = SIMD.float32x4.mul(y, z);
-    y    = SIMD.float32x4.add(y, SIMD.float32x4.splat(-1.388731625493765E-3));
+    y    = SIMD.float32x4.add(y, _ps_coscof_p1);
     y    = SIMD.float32x4.mul(y, z);
-    y    = SIMD.float32x4.add(y, SIMD.float32x4.splat(4.166664568298827E-2));
+    y    = SIMD.float32x4.add(y, _ps_coscof_p2);
     y    = SIMD.float32x4.mul(y, z);
     y    = SIMD.float32x4.mul(y, z);
-    tmp  = SIMD.float32x4.mul(z, SIMD.float32x4.splat(0.5));
+    tmp  = SIMD.float32x4.mul(z, _ps_0p5);
     y    = SIMD.float32x4.sub(y, tmp);
-    y    = SIMD.float32x4.add(y, SIMD.float32x4.splat(1.0));
+    y    = SIMD.float32x4.add(y, _ps_1);
 
     y2   = _ps_sincof_p0;
     //printFloat32x4 ("Probe 11", y2);
     //printFloat32x4 ("Probe 12", z);
     y2   = SIMD.float32x4.mul(y2, z);
-    y2   = SIMD.float32x4.add(y2, SIMD.float32x4.splat(8.3321608736E-3));
+    y2   = SIMD.float32x4.add(y2, _ps_sincof_p1);
     //printFloat32x4 ("Probe 13", y2);
     y2   = SIMD.float32x4.mul(y2, z);
-    y2   = SIMD.float32x4.add(y2, SIMD.float32x4.splat(-1.6666654611E-1));
+    y2   = SIMD.float32x4.add(y2, _ps_sincof_p2);
     y2   = SIMD.float32x4.mul(y2, z);
     y2   = SIMD.float32x4.mul(y2, x);
     y2   = SIMD.float32x4.add(y2, x);
